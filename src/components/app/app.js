@@ -15,7 +15,8 @@ class App extends Component {
                 {name: 'Tokt K.', salary: 5000, increase: true, rise: false, id: 2},
                 {name: 'Maksimchik K.', salary: 3000, increase: false, rise: false, id: 3}
             ],
-            term: ''
+            term: '',
+            filt: 'all'
         }
         this.maxId = 4
     }
@@ -66,11 +67,29 @@ class App extends Component {
             term: term
         })
     }
+
+    onUpdateFilt = (filt) => {
+        this.setState({
+            filt: filt
+        })
+    }
+
+    filterEmp = (items, filt) => {
+        if(filt === 'all') return items
+        else if(filt === 'toUp'){
+            return items.filter(item => item.rise)
+        }
+        else if(filt === 'moreThan'){
+            return items.filter(item => item.salary >= 1000)
+        }
+    }
+
     
     render(){
-        const {data, term} = this.state
+        const {data, term, filt} = this.state
         const usersWithCookies = data.filter(item => item.increase)
         const visibleData = this.searchEmp(data, term)
+        const filteredData = this.filterEmp(visibleData, filt)
         return (
             <div className="app">
                 <AppInfo value={this.maxId} 
@@ -78,11 +97,11 @@ class App extends Component {
     
                 <div className="search-panel">
                     <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
-                    <AppFilter/>
+                    <AppFilter onUpdateFilt={this.onUpdateFilt}/>
                 </div>
     
                 <EmployersList 
-                data={visibleData}
+                data={filteredData}
                 onDelete={this.deleteItem}
                 onToggleProp={this.onToggleProp}/>
                 <EmployersAddForm onAdd={this.addItem}/>
